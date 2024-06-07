@@ -60,6 +60,13 @@
             
             display: none;
         }
+        #resetButton{
+            width: fit-content;
+            background: red;
+            padding: 0.5em 2em;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
     </style>
 </head>
 <body>
@@ -72,10 +79,14 @@
         <div class="hidden">
         <input type="hidden" id="csrfToken" value="{% csrf_token %}">
         </div>
+        <button class="hidden" id="resetButton" onclick="reset()">Reset</button>
     </div>
 
 
     <script>
+        function reset(){
+            location.reload();
+        }
         async function transcribeText() {
             const inputText = document.getElementById('inputText').value;
             const outputText = document.getElementById('outputText');
@@ -101,6 +112,8 @@
             } catch (error) {
                 outputText.innerText = 'Error: Unable to transcribe text.';
             }
+            const resetButton = document.getElementById("resetButton");
+            resetButton.classList.remove("hidden");
         }
         
         function getCookie(name) {
