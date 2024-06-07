@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Transcription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        textarea {
+            width: 95%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .audio-player{
+            width: fit-content;
+            margin: 1em auto;
+        }
+        .hidden{
+            
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text Transcription</h1>
+        <textarea id="inputText" placeholder="Enter your text here..."></textarea>
+        <button onclick="transcribeText()">Transcribe</button>
+        <div class="output" id="outputText"></div>
+        <div class="audio-player" id="audioPlayer"></div>
+        <div class="hidden">
+        <input type="hidden" id="csrfToken" value="{% csrf_token %}">
+        </div>
+    </div>
+
+
+    <script>
+        async function transcribeText() {
+            const inputText = document.getElementById('inputText').value;
+            const outputText = document.getElementById('outputText');
+            const csrfToken = document.getElementById('csrfToken').value;
+            const audioPlayer = document.getElementById('audioPlayer');
+            
+            try {
+                const response = await fetch('/transcribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ text: inputText })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    outputText.innerText = data.transcribedText;
+                    audioPlayer.innerHTML = `<audio controls><source src="${data.audioUrl}" type="audio/mpeg">Your browser does not support the audio element.</audio>`;
+                } else {
+                    outputText.innerText = 'Error: Unable to transcribe text.';
+                }
+            } catch (error) {
+                outputText.innerText = 'Error: Unable to transcribe text.';
+            }
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
