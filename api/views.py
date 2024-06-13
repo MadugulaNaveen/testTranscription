@@ -2,6 +2,7 @@ from datetime import timedelta
 from django.http import JsonResponse
 from django.shortcuts import render
 import json
+from google.oauth2 import service_account
 
 # Create your views here.
 def index(request):
@@ -31,9 +32,11 @@ def transcribe(request):
         output_file = os.path.join(output_dir, 'output.mp3')
         text_to_speech(text, output_file=output_file)
         
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] =  os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+        print("Before Credentials")
+        # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] =  os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         # Upload the file to Google Cloud Storage
-        storage_client = storage.Client()
+        GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+        storage_client = storage.Client.from_service_account_json(GOOGLE_APPLICATION_CREDENTIALS)
         bucket_name = 'text-transcription-1' 
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob('output.mp3')
@@ -47,7 +50,6 @@ def transcribe(request):
         )
         print(blob.public_url)
         transcribed_text = "Successful!! Listen to it here..."
-
         return JsonResponse({'transcribedText': transcribed_text, 'audioUrl': audio_url})
     
     return render(request, 'index.html')

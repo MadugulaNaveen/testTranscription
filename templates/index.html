@@ -106,7 +106,7 @@
                     outputText.innerText = data.transcribedText;
                     audioPlayer.innerHTML = `<audio controls><source src="${data.audioUrl}" type="audio/mpeg">Your browser does not support the audio element.</audio>`;
                 } else {
-                    outputText.innerText = 'Error: Unable to transcribe text.';
+                    outputText.innerText = 'Error: Unable to transcribe text. google';
                 }
             } catch (error) {
                 outputText.innerText = 'Error: Unable to transcribe text.';

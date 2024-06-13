@@ -124,3 +124,12 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_URL = '/media/'
+
+
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Now you can access environment variables as usual
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
