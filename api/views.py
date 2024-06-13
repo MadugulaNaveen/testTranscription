@@ -36,7 +36,10 @@ def transcribe(request):
         # os.environ['GOOGLE_APPLICATION_CREDENTIALS'] =  os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         # Upload the file to Google Cloud Storage
         GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-        storage_client = storage.Client.from_service_account_json(GOOGLE_APPLICATION_CREDENTIALS)
+        credentials_info = json.loads(GOOGLE_APPLICATION_CREDENTIALS)
+        credentials = service_account.Credentials.from_service_account_info(credentials_info)
+        storage_client = storage.Client(credentials=credentials)
+        # storage_client = storage.Client.from_service_account_json(GOOGLE_APPLICATION_CREDENTIALS)
         bucket_name = 'text-transcription-1' 
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob('output.mp3')
